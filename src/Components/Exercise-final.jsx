@@ -1,35 +1,51 @@
 import React from "react";
+import { Switch } from "./Extras/switch";
 
-function countReducer(state, action) {
-  const { type } = action;
-  switch (type) {
-    case "increment": {
-      return state + 1;
-    }
-    case "decrement": {
-      return state - 1;
-    }
-    default: {
-      throw new Error(`Unsupported action type: ${action.type}`);
-    }
-  }
-}
+const ToggleContext = React.createContext();
+ToggleContext.displayName = "ToggleContext";
 
-function Counter() {
-  const [count, dispatch] = React.useReducer(countReducer, 0);
-  const increment = () => dispatch({ type: "increment" });
-  const decrement = () => dispatch({ type: "decrement" });
+function Toggle({ children }) {
+  const [on, setOn] = React.useState(false);
+  const toggle = () => setOn(!on);
 
   return (
-    <div>
-      <button onClick={increment}>{count}</button>
-      <button onClick={decrement}>{count}</button>
-    </div>
+    <ToggleContext.Provider value={{ on, toggle }}>
+      {children}
+    </ToggleContext.Provider>
   );
 }
 
+function useToggle() {
+  return React.useContext(ToggleContext);
+}
+
+function ToggleOn({ children }) {
+  const { on } = useToggle();
+  return on ? children : null;
+}
+
+function ToggleOff({ children }) {
+  const { on } = useToggle();
+  return on ? null : children;
+}
+
+function ToggleButton({ ...props }) {
+  const { on, toggle } = useToggle();
+  return <Switch on={on} onClick={toggle} {...props} />;
+}
+
 function Exercise() {
-  return <Counter />;
+  return (
+    <div>
+      <Toggle>
+        <ToggleOn>The button is on</ToggleOn>
+        <ToggleOff>The button is off</ToggleOff>
+        <div>
+          <ToggleButton />
+        </div>
+      </Toggle>
+    </div>
+  );
 }
 
 export { Exercise };
