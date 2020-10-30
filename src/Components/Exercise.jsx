@@ -1,56 +1,33 @@
 import React from "react";
 
+// The goal:
+// The (arbitrary) API I want is:
+// the dispatch function accepts a number, and the counter increases by that number
+
 // TODO
+// 1. Create the reducer function:
+// a reducer function takes
+// - the current state (in this case, a number)
+// - the `action` (the object you pass to the dispatch. In this case, ex '1')
+// It returns the new state
 //
-// You need to "lift the state" of `animal`, exactly the same way that `name` has already been lifted.
+// 2. Replace the useState in Counter with a useReducer.
+// ex [state, dispatch] = React.useReducer(<reducer function>, <initial state>)
 //
-// I've given you the desired render output of `Display` in a comment:
-// Figure out how to make that work.
+// 3. Since setCount is gone, you want `increment` to call the dispatch with the `action`
+// => the number you want to increase by
 //
-// HINT: your just copying what `Name` did. Copy it and focus on understanding the change.
+// 4. Make sure it works! Try calling dispatch with something besides `1`!
 
-// Extra credit: if you finish this and are bored, see if you can make `Display` smarter:
-// It looks pretty dumb when there's nothing in `name` or `animal`
+function Counter({ initialCount = 0 }) {
+  const [count, setCount] = React.useState(initialCount);
 
-function Name({ name, onNameChange }) {
-  return (
-    <div>
-      <label htmlFor="name">Name: </label>
-      <input id="name" value={name} onChange={onNameChange} />
-    </div>
-  );
-}
-
-function FavoriteAnimal() {
-  const [animal, setAnimal] = React.useState("");
-  return (
-    <div>
-      <label htmlFor="animal">Favorite Animal: </label>
-      <input
-        id="animal"
-        value={animal}
-        onChange={(event) => setAnimal(event.target.value)}
-      />
-    </div>
-  );
-}
-
-function Display({ name }) {
-  return <div>{`Hey ${name}, you are great!`}</div>;
-  // HINT: you probably want to display this:
-  //   return <div>{`Hey ${name}, your favorite animal is: ${animal}!`}</div>
+  const increment = () => setCount(count + 1);
+  return <button onClick={increment}>{count}</button>;
 }
 
 function Exercise() {
-  const [name, setName] = React.useState("");
-
-  return (
-    <form>
-      <Name name={name} onNameChange={(event) => setName(event.target.value)} />
-      <FavoriteAnimal />
-      <Display name={name} />
-    </form>
-  );
+  return <Counter />;
 }
 
 export { Exercise };

@@ -1,23 +1,21 @@
 import "./App.css";
-import { Exercise } from "./Components/Exercise.jsx";
-// import { Exercise } from "./Components/Exercise-final.jsx";
+// import { Exercise } from "./Components/Exercise.jsx";
+import { Exercise } from "./Components/Exercise-final.jsx";
 
 // INSTRUCTIONS
 //
-// This exercise will walk you through sharing state between child components
-// aka "lifting state."
+// This exercise will show you a simple usage of useReducer
+// Note: this is absolutely overkill, but it's good for learning.
 //
-// (All of the code is in Exercise.jsx. To see the final result, import Exercise-final above)
+// In Exercise.js, we have a Counter component.
+// Counter displays a button, which increments a count when clicked.
 //
-// Let's say we've already built a parent component (Exercise) that is managing
-// state for `name`, and passing it to its children `Display` and `Name`. That's working great!
+// It is fully functional using useState.
 //
-// I also have a component `FavoriteAnimal`, which behaves very similarly to `Name`.
+// Lets refactor it to use useReducer instead.
 //
-// Our product team has decided we should remind our user what their favorite animal is.
-//
-// Your job is to figure out how "lift the state" of `animal` from `FavoriteAnimal` into it's parent,
-// so that it can be used in `FavoriteAnimal` AND `Display`.
+// The (arbitrary) API I want is:
+// the dispatch function accepts a number, and the counter increases by that number
 
 function App() {
   return <Exercise />;
