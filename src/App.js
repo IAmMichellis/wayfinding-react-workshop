@@ -1,21 +1,19 @@
 import "./App.css";
-// import { Exercise } from "./Components/Exercise.jsx";
-import { Exercise } from "./Components/Exercise-final.jsx";
+import { Exercise } from "./Components/Exercise.jsx";
+// import { Exercise } from "./Components/Exercise-final.jsx";
 
 // INSTRUCTIONS
 //
-// This exercise will show you a simple usage of useReducer
-// Note: this is absolutely overkill, but it's good for learning.
+// Let's make the reducer from the previous exercise more of an API.
 //
-// In Exercise.js, we have a Counter component.
-// Counter displays a button, which increments a count when clicked.
+// Now we have 2 buttons: one will increment and one will decrement.
+// You'll call dispatch like this:
 //
-// It is fully functional using useState.
+// dispatch({ type: "increment" })
+// OR
+// dispatch({ type: "decrement" })
 //
-// Lets refactor it to use useReducer instead.
-//
-// The (arbitrary) API I want is:
-// the dispatch function accepts a number, and the counter increases by that number
+// See if you can update the reducer function to implement this API.
 
 function App() {
   return <Exercise />;

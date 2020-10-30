@@ -2,28 +2,31 @@ import React from "react";
 
 // The goal:
 // The (arbitrary) API I want is:
-// the dispatch function accepts a number, and the counter increases by that number
+// dispatch({ type: "increment" })
+// OR
+// dispatch({ type: "decrement" })
 
 // TODO
-// 1. Create the reducer function:
-// a reducer function takes
-// - the current state (in this case, a number)
-// - the `action` (the object you pass to the dispatch. In this case, ex '1')
-// It returns the new state
 //
-// 2. Replace the useState in Counter with a useReducer.
-// ex [state, dispatch] = React.useReducer(<reducer function>, <initial state>)
+// (Note that I've done a tiny bit of name massaging, and I've added the decrement button)
 //
-// 3. Since setCount is gone, you want `increment` to call the dispatch with the `action`
-// => the number you want to increase by
-//
-// 4. Make sure it works! Try calling dispatch with something besides `1`!
+// The `action` will look like {action: "command"}
+// Make your countReducer switch on the command: it should use its previous state
+// and the command to return the new state.
 
-function Counter({ initialCount = 0 }) {
-  const [count, setCount] = React.useState(initialCount);
+const countReducer = (state, action) => state + action;
 
-  const increment = () => setCount(count + 1);
-  return <button onClick={increment}>{count}</button>;
+function Counter() {
+  const [count, dispatch] = React.useReducer(countReducer, 0);
+  const increment = () => dispatch(1);
+  const decrement = () => dispatch(-1);
+
+  return (
+    <div>
+      <button onClick={increment}>{count}</button>
+      <button onClick={decrement}>{count}</button>
+    </div>
+  );
 }
 
 function Exercise() {
