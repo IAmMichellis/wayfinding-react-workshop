@@ -1,18 +1,26 @@
 import "./App.css";
-import { Greeting } from "./Components/Greeting.jsx";
-// import { Greeting } from "./Components/Greeting-final.jsx";
+import { Exercise } from "./Components/Exercise.jsx";
+// import { Exercise } from "./Components/Exercise-final.jsx";
 
 // INSTRUCTIONS
 //
-// This exercise will teach you a bit about React.useEffect
+// This exercise will walk you through sharing state between child components
+// aka "lifting state."
 //
-// Let's keep going with our Greeting component.
-// Let's try retrieving and saving the name to local storage
-// When you refresh the page, it should persist the name
-// (try it by importing the final component above)
+// (All of the code is in Exercise.jsx. To see the final result, import Exercise-final above)
+//
+// Let's say we've already built a parent component (Exercise) that is managing
+// state for `name`, and passing it to its children `Display` and `Name`. That's working great!
+//
+// I also have a component `FavoriteAnimal`, which behaves very similarly to `Name`.
+//
+// Our product team has decided we should remind our user what their favorite animal is.
+//
+// Your job is to figure out how "lift the state" of `animal` from `FavoriteAnimal` into it's parent,
+// so that it can be used in `FavoriteAnimal` AND `Display`.
 
 function App() {
-  return <Greeting />;
+  return <Exercise />;
 }
 
 export default App;
