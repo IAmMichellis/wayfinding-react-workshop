@@ -1,36 +1,49 @@
 import React from "react";
+import { Switch } from "../switch";
 
-// The goal:
-// The (arbitrary) API I want is:
-// dispatch({ type: "increment" })
-// OR
-// dispatch({ type: "decrement" })
+const ToggleContext = React.createContext();
+ToggleContext.displayName = "ToggleContext";
 
-// TODO
-//
-// (Note that I've done a tiny bit of name massaging, and I've added the decrement button)
-//
-// The `action` will look like {action: "command"}
-// Make your countReducer switch on the command: it should use its previous state
-// and the command to return the new state.
+function Toggle({ children }) {
+  const [on, setOn] = React.useState(false);
+  const toggle = () => setOn(!on);
 
-const countReducer = (state, action) => state + action;
+  // 🐨 remove all this 💣 and instead return <ToggleContext.Provider> where
+  // the value is an object that has `on` and `toggle` on it.
+  return React.Children.map(children, (child) => {
+    return typeof child.type === "string"
+      ? child
+      : React.cloneElement(child, { on, toggle });
+  });
+}
 
-function Counter() {
-  const [count, dispatch] = React.useReducer(countReducer, 0);
-  const increment = () => dispatch(1);
-  const decrement = () => dispatch(-1);
+function ToggleOn({ children }) {
+  const { on } = useToggle();
+  return on ? children : null;
+}
 
-  return (
-    <div>
-      <button onClick={increment}>{count}</button>
-      <button onClick={decrement}>{count}</button>
-    </div>
-  );
+function ToggleOff({ children }) {
+  const { on } = useToggle();
+  return on ? null : children;
+}
+
+function ToggleButton({ ...props }) {
+  const { on, toggle } = useToggle();
+  return <Switch on={on} onClick={toggle} {...props} />;
 }
 
 function Exercise() {
-  return <Counter />;
+  return (
+    <div>
+      <Toggle>
+        <ToggleOn>The button is on</ToggleOn>
+        <ToggleOff>The button is off</ToggleOff>
+        <div>
+          <ToggleButton />
+        </div>
+      </Toggle>
+    </div>
+  );
 }
 
 export { Exercise };
