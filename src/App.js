@@ -1,14 +1,15 @@
 import "./App.css";
-// import { Greeting } from "./Components/Greeting.jsx";
-import { Greeting } from "./Components/Greeting-final.jsx";
+import { Greeting } from "./Components/Greeting.jsx";
+// import { Greeting } from "./Components/Greeting-final.jsx";
 
 // INSTRUCTIONS
-// What are we trying to do: create a Greeting component
-// that says "Hello <name>" when you update the name.
 //
-// To see it working, switch the Greeting import to Greeting-final
+// This exercise will teach you a bit about React.useEffect
 //
-// There are instructions in Greeting.jsx to help guide you.
+// Let's keep going with our Greeting component.
+// Let's try retrieving and saving the name to local storage
+// When you refresh the page, it should persist the name
+// (try it by importing the final component above)
 
 function App() {
   return <Greeting />;
