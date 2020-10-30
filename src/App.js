@@ -1,25 +1,17 @@
-import logo from './logo.svg';
-import './App.css';
+import "./App.css";
+// import { Greeting } from "./Components/Greeting.jsx";
+import { Greeting } from "./Components/Greeting-final.jsx";
+
+// INSTRUCTIONS
+// What are we trying to do: create a Greeting component
+// that says "Hello <name>" when you update the name.
+//
+// To see it working, switch the Greeting import to Greeting-final
+//
+// There are instructions in Greeting.jsx to help guide you.
 
 function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+  return <Greeting />;
 }
 
 export default App;
