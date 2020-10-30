@@ -4,12 +4,20 @@ import { Greeting } from "./Components/Greeting.jsx";
 
 // INSTRUCTIONS
 //
-// This exercise will teach you a bit about React.useEffect
+// Now we're going to make a custom hook, building on step 2
 //
-// Let's keep going with our Greeting component.
-// Let's try retrieving and saving the name to local storage
-// When you refresh the page, it should persist the name
-// (try it by importing the final component above)
+// Wouldn't it be great if Greeting didn't have to manage local storage?
+//
+// Enter custom hooks!
+//
+// We already have the code to save to local storage working, but we want
+// Greeting to be able to call it like this:
+//
+//    const [name, setName] = useLocalStorageState('name')
+//
+// and have name and setName read and write intuitively.
+//
+// Make it so.
 
 function App() {
   return <Greeting />;
