@@ -1,35 +1,39 @@
+// useContext: simple Counter
+// http://localhost:3000/isolated/final/03.js
+
 import React from "react";
 
-function countReducer(state, action) {
-  const { type } = action;
-  switch (type) {
-    case "increment": {
-      return state + 1;
-    }
-    case "decrement": {
-      return state - 1;
-    }
-    default: {
-      throw new Error(`Unsupported action type: ${action.type}`);
-    }
-  }
+const CountContext = React.createContext();
+CountContext.displayName = "CountContext";
+
+function CountProvider(props) {
+  const [count, setCount] = React.useState(0);
+  const value = [count, setCount];
+  // could also do it like this:
+  // const value = React.useState(0)
+  return <CountContext.Provider value={value} {...props} />;
+}
+
+function CountDisplay() {
+  const [count] = React.useContext(CountContext);
+  return <div>{`The current count is ${count}`}</div>;
 }
 
 function Counter() {
-  const [count, dispatch] = React.useReducer(countReducer, 0);
-  const increment = () => dispatch({ type: "increment" });
-  const decrement = () => dispatch({ type: "decrement" });
-
-  return (
-    <div>
-      <button onClick={increment}>{count}</button>
-      <button onClick={decrement}>{count}</button>
-    </div>
-  );
+  // I omitted the display of 'count' so I could rehighlight this
+  // cooky syntax ;)
+  const [, setCount] = React.useContext(CountContext);
+  const increment = () => setCount((c) => c + 1);
+  return <button onClick={increment}>Increment count</button>;
 }
 
 function Exercise() {
-  return <Counter />;
+  return (
+    <CountProvider>
+      <CountDisplay />
+      <Counter />
+    </CountProvider>
+  );
 }
 
 export { Exercise };
