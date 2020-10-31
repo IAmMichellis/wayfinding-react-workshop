@@ -38,8 +38,8 @@ function Exercise() {
   return (
     <div>
       <Toggle>
-        <ToggleOn>The button is on</ToggleOn>
-        <ToggleOff>The button is off</ToggleOff>
+        <ToggleOn>We have power!</ToggleOn>
+        <ToggleOff>Oh noes, no fun for you :(</ToggleOff>
         <div>
           <ToggleButton />
         </div>
