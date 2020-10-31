@@ -12,41 +12,24 @@ import { Exercise } from "./Components/Exercise.jsx";
 
 // Flavor text:
 //
-// This pattern is called Flexible Compound Components
+// This pattern is called Prop Collections and Getters.
 //
-// Think of something like <ul><li> : alone, they make no sense.
-// A consumer needs to combine them.
-// But clearly these elements interact in some way.
-// This is what we are trying to accomplish:
-// composible components for which the user doesn't know what state they share.
+// Real world examples:
+// - [downshift](https://github.com/downshift-js/downshift) (uses prop getters)
+// - [react-table](https://github.com/tannerlinsley/react-table) (uses prop
+//   getters)
+// - [`@reach/tooltip`](https://reacttraining.com/reach-ui/tooltip) (uses prop
+//   collections)
 //
-// Kent C Dodds gives a really compelling example of this using a tab bar component in this talk:
-// https://www.youtube.com/watch?v=AiJ8tRRH0f8&list=PLV5CVI1eNcJgNqzNwcs4UKrlJdhfDjshf
+// In typical UI components, you need to take accessibility into account. For a
+// button functioning as a toggle, it should have the `aria-pressed` attribute set
+// to `true` or `false` if it's toggled on or off. In addition to remembering that,
+// people need to remember to also add the `onClick` handler to call `toggle`.
 //
-
-// Instructions:
-// We're going to have a <Toggle> component which has some possible child components:
-// <ToggleOn>, which displays when the toggle is on.
-// <ToggleOff>, which does the opposite
-// <ToggleButton>
-//
-// As the consumer, I'm going to do something like this:
-//<Toggle>
-//  <ToggleOn>The button is on</ToggleOn>
-//  <ToggleOff>The button is off</ToggleOff>
-//  <div>
-//    <ToggleButton />
-//  </div>
-//</Toggle>
-//
-// But I could do anything!
-// - I could move the display components.
-// - I could omit some of them.
-// - I could have multiple <ToggleOn>.
-// - I could nest <ToggleButton /> in something more interesting that a <div>
-//
-// In the starting point of the exercise, I have to pass around the state from the parent of <Toggle>
-// We want to fix that.
+// Lots of the reusable/flexible components and hooks that we'll create have some
+// common use-cases and it'd be cool if we could make it easier to use our
+// components and hooks the right way without requiring people to wire things up
+// for common use cases.
 
 function App() {
   return <Exercise />;

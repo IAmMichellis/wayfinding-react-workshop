@@ -3,150 +3,88 @@ import { Switch } from "./Extras/switch";
 
 // Flavor text:
 //
-// <Toggle> isn't doing anything... but conceptually, we know we want it,
-// the same way we conceptually wrap <li> in <ul>.
+// Here you have a custom <Toggle> and a button that behaves like a toggle.
+// You also have a useToggle hook that gives you the state you need to implement a typical toggle.
+// Typically that would be a simple wrapper for useState(isOn).
+// However, all toggles should also implement 'aria-pressed' for screen readers.
+// They will also always need an onClick:
+// - usually that onClick will call setToggle (or just "toggle") from the useState call.
+// - but it might also do something: maybe it needs to send analytics.
+//
+// It would be nice not to have to repeat all that state everytime we use a toggle in our app.
 //
 // TODO:
-// 1. Toggle is a higher level component that is managing state for children
-// in unknown locations... which React hook have we used for this before?
-// Set that up: make Toggle a component that manages on and setOn using useState,
-// and make a helper function that lets its children access that via useToggle
-// HINT: I think you can figure this out, but there's a spoiler at the bottom of the file :)
 //
-// 2. Stop managing on on state in <Exercise>, and stop accepting it as a prop in
-// the three Toggle children components. Make them use useToggle to get what they need.
+// 1. This example is broken right now, but the useToggle API is right. Have a look at <Exercise>:
+// - observe that instead of getting a setToggle/toggle function from useToggle,
+//   we want a function that will return the props to spread on a toggle.
 //
-// That's it :)
+// - observe that we've simply spread the result of getTogglerProps on <Switch>,
+//   and that we had to pass in the `on` state to getTogglerProps
+//   (because how could it possibly return the right states and setters?)
 //
-// See the bottom of the file for a bit more flavor text.
+// - observe what we passed to getTogglerProps in the <button>:
+//   - we happen to want a custom screen reader label, so we passed it in
+//   - we need to log on onClick: we've passed in an onClick function...
+//     but this is a toggle, so we still expect onClick to perform the toggle action.
+//   - a custom id
+//
+// 2. Implement getTogglerProps() so that it takes the custom props the user wants,
+//    and returns those props combined with the "typical" toggle props.
+//    Hints:
+//      - a toggle should always have "aria-pressed": {on}, so it can be used by screen readers
+//      - if an onClick prop gets passed in, we want to return a new onClick
+//        that calls the one passed in, and then calls our typical onClick (toggle)
+//           - you can do this with callAll(customOnClick, toggle)
+//
+// 3. Make sure your toggles work, but also make sure your props got set:
+//    Go inspect the button.
+//
 
-function Toggle(props) {
-  // This isn't really doing anything yet...
-  return <div {...props} />;
-}
+// Extra credit:
+// 1. You might be thinking "Woah, what if I don't want you to override my onClick????"
+//    Don't worry, you can completely override the onClick without changing anything about useToggle.
+//    How would you do that?
+// 2. Sure, you made your own onClick. But I mean.... you had to implement your own toggle, and that sucked...
+//    How could you change useToggle to support users who want to implement their own onClick using toggle() ?
 
-function ToggleOn({ on, children }) {
-  // const { on } = useToggle();
-  return on ? children : null;
-}
+// This is a handy util function that takes any number of functions and calls them all.
+const callAll = (...fns) => (...args) => fns.forEach((fn) => fn?.(...args));
 
-function ToggleOff({ on, children }) {
-  // const { on } = useToggle();
-  return on ? null : children;
-}
+function useToggle() {
+  const [on, setOn] = React.useState(false);
+  const toggle = () => setOn(!on);
 
-function ToggleButton({ on, toggle, ...props }) {
-  // const { on, toggle } = useToggle();
-  return <Switch on={on} onClick={toggle} {...props} />;
+  // TODO implement this
+  function getTogglerProps() {}
+
+  return { on, getTogglerProps };
 }
 
 function Exercise() {
-  const [on, setOn] = React.useState(false);
-
+  const { on, getTogglerProps } = useToggle();
   return (
     <div>
-      <Toggle>
-        <ToggleOn on={on}>We have power!</ToggleOn>
-        <ToggleOff on={on}>Oh noes, no fun for you :(</ToggleOff>
-        <div>
-          <ToggleButton on={on} toggle={() => setOn(!on)} />
-        </div>
-      </Toggle>
+      {/*
+        Without getTogglerProps, your consumer would have to remember to setup all 
+        the typical Switch props. Something like this:  
+
+        <Switch on={on} 'aria-pressed': on, onClick: toggle} />
+       */}
+
+      <Switch {...getTogglerProps({ on })} />
+      <hr />
+      <button
+        {...getTogglerProps({
+          "aria-label": "custom-button",
+          onClick: () => console.info("onButtonClick"),
+          id: "custom-button-id",
+        })}
+      >
+        {on ? "on" : "off"}
+      </button>
     </div>
   );
 }
 
 export { Exercise };
-
-// Spoilers below
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-// 1. Toggle is going to be a ToggleContext.Provider
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-// Are you finished? Keep scrolling for more flavor text.
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-// You might ask: how is this different from a global context provider like UserAuthContext?
-// It's because this is meant to be used on a much smaller component: you could use this to implement a small
-// tabbing component, or a toggle like we've done here.
-// It's also very compelling in external libraries:
-// an external library for something like a modal dialog wouldn't make you manage details of its child components,
-// but neither would it presume to know exactly what buttons you want, and where to put them:
-// it would give you child components for that.

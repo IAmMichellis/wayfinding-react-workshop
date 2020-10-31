@@ -1,49 +1,41 @@
 import React from "react";
 import { Switch } from "./Extras/switch";
 
-const ToggleContext = React.createContext();
-ToggleContext.displayName = "ToggleContext";
+const callAll = (...fns) => (...args) => fns.forEach((fn) => fn?.(...args));
 
-function Toggle({ children }) {
+function useToggle() {
   const [on, setOn] = React.useState(false);
   const toggle = () => setOn(!on);
 
-  return (
-    <ToggleContext.Provider value={{ on, toggle }}>
-      {children}
-    </ToggleContext.Provider>
-  );
-}
+  function getTogglerProps({ onClick, ...props } = {}) {
+    return {
+      "aria-pressed": on,
+      onClick: callAll(onClick, toggle),
+      ...props,
+    };
+  }
 
-function useToggle() {
-  return React.useContext(ToggleContext);
-}
-
-function ToggleOn({ children }) {
-  const { on } = useToggle();
-  return on ? children : null;
-}
-
-function ToggleOff({ children }) {
-  const { on } = useToggle();
-  return on ? null : children;
-}
-
-function ToggleButton({ ...props }) {
-  const { on, toggle } = useToggle();
-  return <Switch on={on} onClick={toggle} {...props} />;
+  return {
+    on,
+    getTogglerProps,
+  };
 }
 
 function Exercise() {
+  const { on, getTogglerProps } = useToggle();
   return (
     <div>
-      <Toggle>
-        <ToggleOn>We have power!</ToggleOn>
-        <ToggleOff>Oh noes, no fun for you :(</ToggleOff>
-        <div>
-          <ToggleButton />
-        </div>
-      </Toggle>
+      <Switch {...getTogglerProps({ on })} />
+      <hr />
+      <button
+        {...getTogglerProps({
+          "aria-label": "custom-button",
+          onClick: () => console.info("onButtonClick"),
+          id: "custom-button-id",
+        })}
+      >
+        {on ? "on" : "off"}
+      </button>
     </div>
   );
 }
