@@ -25,13 +25,29 @@ function toggleReducer(state, { type, initialState }) {
     }
   }
 }
-function useToggle({ initialOn = false, reducer = toggleReducer } = {}) {
+
+function useToggle({
+  initialOn = false,
+  reducer = toggleReducer,
+  onChange,
+  on: controlledOn,
+} = {}) {
   const { current: initialState } = React.useRef({ on: initialOn });
   const [state, dispatch] = React.useReducer(reducer, initialState);
-  const { on } = state;
+  const onIsControlled = controlledOn != null;
+  const on = onIsControlled ? controlledOn : state.on;
 
-  const toggle = () => dispatch({ type: "toggle" });
-  const reset = () => dispatch({ type: "reset", initialState });
+  function dispatchWithOnChange(action) {
+    if (!onIsControlled) {
+      dispatch(action);
+    }
+    onChange?.(reducer({ ...state, on }, action), action);
+  }
+
+  const toggle = () => dispatchWithOnChange({ type: actionTypes.toggle });
+  const reset = () =>
+    dispatchWithOnChange({ type: actionTypes.reset, initialState });
+
   function getTogglerProps({ onClick, ...props } = {}) {
     return {
       "aria-pressed": on,
@@ -55,64 +71,55 @@ function useToggle({ initialOn = false, reducer = toggleReducer } = {}) {
     getResetterProps,
   };
 }
-// export {useToggle, toggleReducer}
 
-// import {useToggle, toggleReducer} from './use-toggle'
+function Toggle({ on: controlledOn, onChange }) {
+  const { on, getTogglerProps } = useToggle({ on: controlledOn, onChange });
+  const props = getTogglerProps({ on });
+  return <Switch {...props} />;
+}
 
 function Exercise() {
+  const [bothOn, setBothOn] = React.useState(false);
   const [timesClicked, setTimesClicked] = React.useState(0);
-  const clickedTooMuch = timesClicked >= 4;
 
-  function toggleStateReducer(state, action) {
-    if (action.type === actionTypes.toggle && clickedTooMuch) {
-      return { on: state.on };
+  function handleToggleChange(state, action) {
+    if (action.type === actionTypes.toggle && timesClicked > 4) {
+      return;
     }
-    return toggleReducer(state, action);
+    setBothOn(state.on);
+    setTimesClicked((c) => c + 1);
   }
 
-  const {
-    on: customOn,
-    getTogglerProps: getCustomTogglerProps,
-    getResetterProps: getCustomResetterProps,
-  } = useToggle({
-    reducer: toggleStateReducer,
-  });
-
-  const {
-    on: defaultOn,
-    getTogglerProps: getDefaultTogglerProps,
-  } = useToggle();
+  function handleResetClick() {
+    setBothOn(false);
+    setTimesClicked(0);
+  }
 
   return (
-    <>
+    <div>
       <div>
-        <Switch
-          {...getCustomTogglerProps({
-            disabled: clickedTooMuch,
-            on: customOn,
-            onClick: () => setTimesClicked((count) => count + 1),
-          })}
-        />
-        {clickedTooMuch ? (
-          <div data-testid="notice">
-            Whoa, you clicked too much!
-            <br />
-          </div>
-        ) : timesClicked > 0 ? (
-          <div data-testid="click-count">Click count: {timesClicked}</div>
-        ) : null}
-        <button
-          {...getCustomResetterProps({ onClick: () => setTimesClicked(0) })}
-        >
-          Reset
-        </button>
+        <Toggle on={bothOn} onChange={handleToggleChange} />
+        <Toggle on={bothOn} onChange={handleToggleChange} />
       </div>
+      {timesClicked > 4 ? (
+        <div data-testid="notice">
+          Whoa, you clicked too much!
+          <br />
+        </div>
+      ) : (
+        <div data-testid="click-count">Click count: {timesClicked}</div>
+      )}
+      <button onClick={handleResetClick}>Reset</button>
       <hr />
       <div>
-        <Switch {...getDefaultTogglerProps({ on: defaultOn })} />
-        <div data-testid="notice">Go wild!</div>
+        <div>Uncontrolled Toggle:</div>
+        <Toggle
+          onChange={(...args) =>
+            console.info("Uncontrolled Toggle onChange", ...args)
+          }
+        />
       </div>
-    </>
+    </div>
   );
 }
 
