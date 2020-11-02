@@ -12,24 +12,28 @@ import { Exercise } from "./Components/Exercise.jsx";
 
 // Flavor text:
 //
-// This pattern is called Prop Collections and Getters.
+// This pattern is called inversion of control
 //
 // Real world examples:
 // - [downshift](https://github.com/downshift-js/downshift) (uses prop getters)
-// - [react-table](https://github.com/tannerlinsley/react-table) (uses prop
-//   getters)
-// - [`@reach/tooltip`](https://reacttraining.com/reach-ui/tooltip) (uses prop
-//   collections)
 //
-// In typical UI components, you need to take accessibility into account. For a
-// button functioning as a toggle, it should have the `aria-pressed` attribute set
-// to `true` or `false` if it's toggled on or off. In addition to remembering that,
-// people need to remember to also add the `onClick` handler to call `toggle`.
 //
-// Lots of the reusable/flexible components and hooks that we'll create have some
-// common use-cases and it'd be cool if we could make it easier to use our
-// components and hooks the right way without requiring people to wire things up
-// for common use cases.
+//
+// This is an example of where the state reducer can be really powerful.
+//
+// Say you have a component with a lot of complex state logic that you've codified
+// using useReducer.
+// Now a user comes along who wants a tiny tweak to one of the reducer actions.
+// With inversion of control, you can let users take complete control over
+// the reducer, while simultaneously supporting the common case.
+// You can ALSO provide the custom user with sane defaults ;)
+//
+// We're going to walk through what this looks like with a very contrived toggle example.
+//
+// In the final version (switch imports in App to see it), we have an unmodifed <Toggle>
+// which works as normal,
+// And a custom <Toggle> that can't be clicked too many times.
+// Both use the same toggle code.
 
 function App() {
   return <Exercise />;

@@ -3,86 +3,158 @@ import { Switch } from "./Extras/switch";
 
 // Flavor text:
 //
-// Here you have a custom <Toggle> and a button that behaves like a toggle.
-// You also have a useToggle hook that gives you the state you need to implement a typical toggle.
-// Typically that would be a simple wrapper for useState(isOn).
-// However, all toggles should also implement 'aria-pressed' for screen readers.
-// They will also always need an onClick:
-// - usually that onClick will call setToggle (or just "toggle") from the useState call.
-// - but it might also do something: maybe it needs to send analytics.
+// In the final version (switch imports in App to see it), we have an unmovidifed <Toggle>
+// which works as normal,
+// And a custom <Toggle> that can't be clicked too many times.
+// Both use the same toggle code.
 //
-// It would be nice not to have to repeat all that state everytime we use a toggle in our app.
+// Your job is to change the useToggle hook to enable the custom use case.
+// We will enable a custom Toggle by allowing a consumer to implement
+// their own reducer function.
 //
-// TODO:
+// ^ This pattern is called Inversion of Control: coding the component
+// so that a user can take control of the component's state management, if they want.
 //
-// 1. This example is broken right now, but the useToggle API is right. Have a look at <Exercise>:
-// - observe that instead of getting a setToggle/toggle function from useToggle,
-//   we want a function that will return the props to spread on a toggle.
+// TODO
 //
-// - observe that we've simply spread the result of getTogglerProps on <Switch>,
-//   and that we had to pass in the `on` state to getTogglerProps
-//   (because how could it possibly return the right states and setters?)
+// 1. We want to be able to pass our custom `toggleStateReducer` to useToggle,
+// and have it override the default reducer. How would you do that?
+// Hint: it's a *very* small code change: two lines in useToggle ;)
 //
-// - observe what we passed to getTogglerProps in the <button>:
-//   - we happen to want a custom screen reader label, so we passed it in
-//   - we need to log on onClick: we've passed in an onClick function...
-//     but this is a toggle, so we still expect onClick to perform the toggle action.
-//   - a custom id
+// 2. Verify that it's working! The custom toggle should only click 4 times,
+// and the other toggle should keep toggling forever.
 //
-// 2. Implement getTogglerProps() so that it takes the custom props the user wants,
-//    and returns those props combined with the "typical" toggle props.
-//    Hints:
-//      - a toggle should always have "aria-pressed": {on}, so it can be used by screen readers
-//      - if an onClick prop gets passed in, we want to return a new onClick
-//        that calls the one passed in, and then calls our typical onClick (toggle)
-//           - you can do this with callAll(customOnClick, toggle)
+// 3. Head down to <Exercise> and make sure you understand why the <Toggle>s
+// are doing different things. Understand why this is a good case to support.
 //
-// 3. Make sure your toggles work, but also make sure your props got set:
-//    Go inspect the button.
+// 4. Notice that we had to implement the entire reducer function in <Exercise>.
+// That was easy for <Toggle>, but it would be error prone in a larger component.
+// Replace toggleStateReducer in <Exercise> with the following, and
+// change useToggle so that this custom reducer, which only overrides
+// the action we care about, works:
 //
+// function toggleStateReducer(state, action) {
+//   if (action.type === actionTypes.toggle && clickedTooMuch) {
+//     return { on: state.on };
+//   }
+//   return toggleReducer(state, action);
+// }
 
-// Extra credit:
-// 1. You might be thinking "Woah, what if I don't want you to override my onClick????"
-//    Don't worry, you can completely override the onClick without changing anything about useToggle.
-//    How would you do that?
-// 2. Sure, you made your own onClick. But I mean.... you had to implement your own toggle, and that sucked...
-//    How could you change useToggle to support users who want to implement their own onClick using toggle() ?
-
-// This is a handy util function that takes any number of functions and calls them all.
 const callAll = (...fns) => (...args) => fns.forEach((fn) => fn?.(...args));
 
-function useToggle() {
-  const [on, setOn] = React.useState(false);
-  const toggle = () => setOn(!on);
-
-  // TODO implement this
-  function getTogglerProps() {}
-
-  return { on, getTogglerProps };
+const actionTypes = {
+  toggle: "toggle",
+  reset: "reset",
+};
+function toggleReducer(state, { type, initialState }) {
+  switch (type) {
+    case actionTypes.toggle: {
+      return { on: !state.on };
+    }
+    case actionTypes.reset: {
+      return initialState;
+    }
+    default: {
+      throw new Error(`Unsupported type: ${type}`);
+    }
+  }
 }
 
+function useToggle({ initialOn = false } = {}) {
+  const { current: initialState } = React.useRef({ on: initialOn });
+  const [state, dispatch] = React.useReducer(toggleReducer, initialState);
+  const { on } = state;
+
+  const toggle = () => dispatch({ type: "toggle" });
+  const reset = () => dispatch({ type: "reset", initialState });
+
+  function getTogglerProps({ onClick, ...props } = {}) {
+    return {
+      "aria-pressed": on,
+      onClick: callAll(onClick, toggle),
+      ...props,
+    };
+  }
+
+  function getResetterProps({ onClick, ...props } = {}) {
+    return {
+      onClick: callAll(onClick, reset),
+      ...props,
+    };
+  }
+
+  return {
+    on,
+    reset,
+    toggle,
+    getTogglerProps,
+    getResetterProps,
+  };
+}
+
+// Seperate file
+
 function Exercise() {
-  const { on, getTogglerProps } = useToggle();
+  const [timesClicked, setTimesClicked] = React.useState(0);
+  const clickedTooMuch = timesClicked >= 4;
+
+  function toggleStateReducer(state, action) {
+    switch (action.type) {
+      case actionTypes.toggle: {
+        if (clickedTooMuch) {
+          return { on: state.on };
+        }
+        return { on: !state.on };
+      }
+      case actionTypes.reset: {
+        return { on: false };
+      }
+      default: {
+        throw new Error(`Unsupported type: ${action.type}`);
+      }
+    }
+  }
+
+  const {
+    on: customOn,
+    getTogglerProps: getCustomTogglerProps,
+    getResetterProps: getCustomResetterProps,
+  } = useToggle({
+    reducer: toggleStateReducer,
+  });
+
+  const {
+    on: defaultOn,
+    getTogglerProps: getDefaultTogglerProps,
+  } = useToggle();
+
   return (
     <div>
-      {/*
-        Without getTogglerProps, your consumer would have to remember to setup all 
-        the typical Switch props. Something like this:  
-
-        <Switch on={on} 'aria-pressed': on, onClick: toggle} />
-       */}
-
-      <Switch {...getTogglerProps({ on })} />
-      <hr />
-      <button
-        {...getTogglerProps({
-          "aria-label": "custom-button",
-          onClick: () => console.info("onButtonClick"),
-          id: "custom-button-id",
+      <Switch
+        {...getCustomTogglerProps({
+          disabled: clickedTooMuch,
+          on: customOn,
+          onClick: () => setTimesClicked((count) => count + 1),
         })}
+      />
+      {clickedTooMuch ? (
+        <div data-testid="notice">
+          Whoa, you clicked too much!
+          <br />
+        </div>
+      ) : timesClicked > 0 ? (
+        <div data-testid="click-count">Click count: {timesClicked}</div>
+      ) : null}
+      <button
+        {...getCustomResetterProps({ onClick: () => setTimesClicked(0) })}
       >
-        {on ? "on" : "off"}
+        Reset
       </button>
+      <hr />
+      <div>
+        <Switch {...getDefaultTogglerProps({ on: defaultOn })} />
+        <div data-testid="notice">Go wild!</div>
+      </div>
     </div>
   );
 }
