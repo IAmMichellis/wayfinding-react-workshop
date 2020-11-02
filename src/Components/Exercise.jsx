@@ -29,16 +29,12 @@ import { Switch } from "./Extras/switch";
 //
 // 4. Notice that we had to implement the entire reducer function in <Exercise>.
 // That was easy for <Toggle>, but it would be error prone in a larger component.
-// Replace toggleStateReducer in <Exercise> with the following, and
-// change useToggle so that this custom reducer, which only overrides
-// the action we care about, works:
+// See if you can refactor toggleStateReducer so that it overrides the
+// "toggle" action, and uses the default reducer otherwise.
 //
-// function toggleStateReducer(state, action) {
-//   if (action.type === actionTypes.toggle && clickedTooMuch) {
-//     return { on: state.on };
-//   }
-//   return toggleReducer(state, action);
-// }
+// 5. Because everything here is in the same file, the change in #4 just worked.
+// What would you have had to do to access the toggleReducer function in Exercise.jsx?
+//
 
 const callAll = (...fns) => (...args) => fns.forEach((fn) => fn?.(...args));
 
