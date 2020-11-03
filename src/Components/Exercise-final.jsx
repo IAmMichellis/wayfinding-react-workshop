@@ -37,6 +37,23 @@ function useToggle({
   const onIsControlled = controlledOn != null;
   const on = onIsControlled ? controlledOn : state.on;
 
+  // EXTRA CREDIT SPOILER!
+  // You don't need this, but it helps users of your component if they ever use it wrong.
+  //
+  // const hasOnChange = Boolean(onChange);
+  // React.useEffect(() => {
+  //   warning(
+  //     !(
+  //       (
+  //         !hasOnChange &&
+  //         onIsControlled &&
+  //         !readOnly
+  //       ) /* pass readOnly in to useToggle. Its purpose is to supress this warning. */
+  //     ),
+  //     `An \`on\` prop was provided to useToggle without an \`onChange\` handler. This will render a read-only toggle. If you want it to be mutable, use \`initialOn\`. Otherwise, set either \`onChange\` or \`readOnly\`.`
+  //   );
+  // }, [hasOnChange, onIsControlled, readOnly]);
+
   function dispatchWithOnChange(action) {
     if (!onIsControlled) {
       dispatch(action);
