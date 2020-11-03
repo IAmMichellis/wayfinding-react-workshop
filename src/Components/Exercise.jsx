@@ -1,9 +1,12 @@
 import React from "react";
 import { Switch } from "./Extras/switch";
 
+//
+// IMPORTANT: you only need to make changes in  useToggle
+//
 // TODO
 // 1. Take a look at the usage of <Toggle> in <Exercise>:
-// You'll want to pull out those new props in useToggle.
+// You'll need to access those props in useToggle.
 // (Hint: since one of the props is called 'on', and you probably want
 // an internal state called 'on', alias the prop to 'controlledOn'
 // (that's {externalArg: myInternalArgName}))
@@ -12,6 +15,7 @@ import { Switch } from "./Extras/switch";
 // and from `controlledOn` if that's passed in: do that.
 // - Also, you're going to need the concept of `isOnControlled` repeatedly,
 //   so just assign that to a const now and use it.
+// - something like  const  {on} =  isOnControlled ? <...>
 //
 // 3. Now we need to think about onChange:
 // - if onChange is passed in, we want toggle() and reset()
@@ -44,7 +48,7 @@ import { Switch } from "./Extras/switch";
 //
 // Extra Credits:
 // - In <Exercise>, try making an <input> that is only half controlled:
-//   (give it a value but no onChange). Observe what happens the in dev console.
+//   (give it a value but no onChange). Observe what happens in the dev console.
 //   Can you update our useToggle to behave similarily?
 //   (The solution is commented out in Exercise-final.jsx)
 // - Did you notice how setBothOn was declared? I thought that was a clever,
@@ -54,9 +58,9 @@ import { Switch } from "./Extras/switch";
 //   optional inputs to useToggle, and useToggle returns getTogglerProps. No problems :)
 // - Going back to the first extra credit, where we made a warning to tell users
 //   if they initialized our component wrong: note that we could make this more robust:
-//   - We could make that logic reusable in a custom hook useControlledDataComponentWarning,
+//   - We could make that logic reusable in a custom hook useControlledComponentWarning,
 //     and call it in useToggle roughly like this:
-//       useControlledDataComponentWarning(controlledOn, 'on', 'useToggle')
+//       useControlledComponentWarning(controlledOn, 'on', 'useToggle')
 //   - we could also turn these warnings off in production by wrapping the whole useEffect
 //     (or our custom hook call) in:
 //        if (process.env.NODE_ENV !== 'production') { <code to figure out if we should warn> }
